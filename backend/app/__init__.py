@@ -1,16 +1,26 @@
+import os
 from flask import Flask
 from flask_login import LoginManager
 from flask_socketio import SocketIO
 from flask_pymongo import PyMongo
+from dotenv import load_dotenv
 
 socketio = SocketIO()
-login_manager = LoginManager()
 mongo = PyMongo()
+login_manager = LoginManager()
+
+load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'secret!'
-    app.config['MONGO_URI'] = 'mongodb://localhost:27017/chat_db'  # or MongoDB Atlas URI
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
+    mongo_user = os.getenv('MONGO_USER')
+    mongo_password = os.getenv('MONGO_PASSWORD')
+    mongo_cluster = os.getenv('MONGO_CLUSTER')
+    mongo_db = os.getenv('MONGO_DB_NAME')
+
+    app.config['MONGO_URI'] = f"mongodb+srv://{mongo_user}:{mongo_password}@{mongo_cluster}/{mongo_db}?retryWrites=true&w=majority"
 
     mongo.init_app(app)
     login_manager.init_app(app)
