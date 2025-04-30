@@ -1,13 +1,13 @@
 from flask import Blueprint, request, jsonify
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from app import login_manager
-from app.models import User, create_user, validate_login, get_user_count
+from app.models import User, create_user, validate_login, get_user_count, Message
 
 main = Blueprint('main', __name__)
 
 @login_manager.user_loader
-def load_user(user_id):
-    return User.get(user_id)
+def load_user(username):
+    return User.get(username)
 
 @main.route('/')
 def home():
@@ -52,3 +52,47 @@ def test_db():
         return jsonify({'message': f'Database connected. {count} users found.'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@main.route('/send_message', methods=['POST'])
+@login_required
+def send_message():
+    data = request.json
+    receiver = data.get('receiver')
+    content = data.get('content')
+
+    if not receiver or not content:
+        return jsonify({'message': 'Receiver and content are required'}), 400
+
+    message = Message.create_message(current_user.username, receiver, content)
+
+    return jsonify({
+        'message': 'Message sent successfully',
+        'data': {
+            'sender': message['sender'],
+            'receiver': message['receiver'],
+            'content': message['content'],
+            'timestamp': message['timestamp']
+        }
+    }), 201
+
+@main.route('/get_messages', methods=['GET'])
+@login_required
+def get_messages():
+    other_user = request.args.get('other_user')
+
+    if not other_user:
+        return jsonify({'message': 'Other user is required'}), 400
+
+    messages = Message.get_messages_between_users(current_user.username, other_user)
+
+    formatted_messages = [
+        {
+            'sender': message['sender'],
+            'receiver': message['receiver'],
+            'content': message['content'],
+            'timestamp': message['timestamp']
+        }
+        for message in messages
+    ]
+
+    return jsonify({'messages': formatted_messages}), 200
