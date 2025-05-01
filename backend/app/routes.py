@@ -2,16 +2,41 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from app import login_manager
 from app.models import User, create_user, validate_login, get_user_count, Message
+import requests
 
 main = Blueprint('main', __name__)
 
 @login_manager.user_loader
-def load_user(username):
-    return User.get(username)
+def load_user(user_id):
+    return User.get(user_id)
+
+def build_prompt_from_history(messages, new_user_message):
+    prompt = ""
+    # Reverse to chronological order
+    for msg in reversed(messages):
+        sender = "User" if msg['sender'] == 'user' else "Assistant"
+        prompt += f"{sender}: {msg['content']}\n"
+    prompt += f"User: {new_user_message}\nAssistant:"
+    return prompt
+
+def get_llm_response(username, user_message):
+    history = Message.get_conversation(username, limit=10)
+    prompt = build_prompt_from_history(history, user_message)
+
+    try:
+        response = requests.post(
+            "http://localhost:11434/api/generate",
+            json={"model": "llama3.2", "prompt": prompt, "stream": False},
+            timeout=15
+        )
+        return response.json().get("response", "Internal Server Error: Go touch grass")
+    except Exception as e:
+        return f"LLM error: {str(e)}"
+
 
 @main.route('/')
 def home():
-    return 'Flask app with MongoDB Atlas is running!'
+    return 'Flask app connected to Ollama LLM is running!'
 
 @main.route('/signup', methods=['POST'])
 def signup():
@@ -56,43 +81,44 @@ def test_db():
 @main.route('/send_message', methods=['POST'])
 @login_required
 def send_message():
-    data = request.json
-    receiver = data.get('receiver')
-    content = data.get('content')
+    content = request.json.get('content')
+    username = current_user.username
 
-    if not receiver or not content:
-        return jsonify({'message': 'Receiver and content are required'}), 400
+    if not content:
+        return jsonify({'message': 'Message content is required'}), 400
 
-    message = Message.create_message(current_user.username, receiver, content)
+    # Save user's message
+    Message.save_message(username, 'user', content)
+
+    # Get LLM response based on history
+    llm_reply = get_llm_response(username, content)
+
+    # Save LLM's response
+    Message.save_message(username, 'llm', llm_reply)
+
+    return jsonify({'response': llm_reply}), 200
+
+@main.route('/get_conversation', methods=['GET'])
+@login_required
+def get_conversation():
+    username = current_user.username
+    messages = Message.get_conversation(username)
+    formatted = [
+        {
+            'sender': msg['sender'],
+            'content': msg['content'],
+            'timestamp': msg['timestamp']
+        } for msg in messages
+    ][::-1]  # reverse to chronological order
+
+    return jsonify({'messages': formatted}), 200
+
+@main.route('/clear_history', methods=['POST'])
+@login_required
+def clear_history():
+    username = current_user.username
+    deleted_count = Message.clear_conversation(username)
 
     return jsonify({
-        'message': 'Message sent successfully',
-        'data': {
-            'sender': message['sender'],
-            'receiver': message['receiver'],
-            'content': message['content'],
-            'timestamp': message['timestamp']
-        }
-    }), 201
-
-@main.route('/get_messages', methods=['GET'])
-@login_required
-def get_messages():
-    other_user = request.args.get('other_user')
-
-    if not other_user:
-        return jsonify({'message': 'Other user is required'}), 400
-
-    messages = Message.get_messages_between_users(current_user.username, other_user)
-
-    formatted_messages = [
-        {
-            'sender': message['sender'],
-            'receiver': message['receiver'],
-            'content': message['content'],
-            'timestamp': message['timestamp']
-        }
-        for message in messages
-    ]
-
-    return jsonify({'messages': formatted_messages}), 200
+        'message': f'Conversation history cleared. {deleted_count} messages deleted.'
+    }), 200
