@@ -3,6 +3,7 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_socketio import SocketIO
 from flask_pymongo import PyMongo
+from flask_cors import CORS
 from dotenv import load_dotenv
 
 socketio = SocketIO()
@@ -25,6 +26,8 @@ def create_app():
     mongo.init_app(app)
     login_manager.init_app(app)
     socketio.init_app(app)
+
+    CORS(app, supports_credentials=True)  # Allow cross-origin requests with cookies
 
     from .routes import main as main_blueprint
     app.register_blueprint(main_blueprint)

@@ -77,6 +77,11 @@ def test_db():
         return jsonify({'message': f'Database connected. {count} users found.'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+@main.route('/check-auth')
+@login_required
+def check_auth():
+    return jsonify({'authenticated': True}), 200
 
 @main.route('/send_message', methods=['POST'])
 @login_required
