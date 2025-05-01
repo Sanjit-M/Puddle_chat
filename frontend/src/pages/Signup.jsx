@@ -19,7 +19,7 @@ export default function Signup() {
 
 	return (
 		<div className="flex items-center justify-center h-screen flex-col gap-4">
-			<h2 className="text-2xl font-bold">Sign up</h2>
+			<h2 className="text-2xl font-bold">Sign up for Puddle</h2>
 
 			<form
 				onSubmit={handleSubmit}

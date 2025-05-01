@@ -17,7 +17,7 @@ export default function Login() {
 
 	return (
 		<div className="flex items-center justify-center h-screen flex-col gap-4">
-			<h2 className="text-2xl font-bold">Log in</h2>
+			<h2 className="text-2xl font-bold">Log in to Puddle</h2>
 
 			<form
 				onSubmit={handleSubmit}
