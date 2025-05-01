@@ -1,7 +1,11 @@
 import React from "react"
 import { useState } from "react"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
 export default function Signup() {
+	const navigate = useNavigate()
+	
 	const [formData, setFormData] = useState({
 		username: "",
 		password: "",
@@ -14,7 +18,23 @@ export default function Signup() {
 
 	function handleSubmit(e) {
 		e.preventDefault()
-		console.log(formData)
+		axios.post('http://localhost:5000/signup', {
+			username: formData.username,
+			password: formData.password,
+		}, {
+			withCredentials: true,
+		})
+		.then(response => {
+			if(response.status === 200) {
+				// Redirect to the home page or dashboard after successful login
+				navigate('/chat');
+			}
+		})
+		.catch(error => {
+			console.error("Signup failed:", error);
+			// Handle login failure (e.g., show an error message)
+			alert('Signup failed. Check your username and password.');
+		});
 	}
 
 	return (

@@ -6,6 +6,8 @@ import Login from "./pages/Login.jsx"
 import Signup from "./pages/Signup.jsx"
 import Chat from "./pages/Chat.jsx"
 
+import ProtectedRoute from "./ProtectedRoute.jsx"
+
 export default function App() {
 	return (
 		<BrowserRouter>
@@ -13,7 +15,13 @@ export default function App() {
 				<Route path="/" element={<Home />} />
 				<Route path="/signup" element={<Signup />} />
 				<Route path="/login" element={<Login />} />
-				<Route path="/chat" element={<Chat />} />
+				<Route
+					path="/chat" element={
+						<ProtectedRoute>
+							<Chat />
+						</ProtectedRoute>
+					}
+				/>
 			</Routes>
 		</BrowserRouter>
 	)
