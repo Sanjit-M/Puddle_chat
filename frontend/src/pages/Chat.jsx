@@ -1,8 +1,11 @@
 import React from "react"
 import { useState, useEffect, useRef } from "react"
 import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
 export default function Chat() {
+	const navigate = useNavigate()
+
 	axios.defaults.withCredentials = true
 
 	const [messages, setMessages] = useState([])
@@ -10,7 +13,7 @@ export default function Chat() {
 	const [loading, setLoading] = useState(false)
 	const messagesEndRef = useRef(null)
 
-	const fetchMessages = async () => {
+	async function fetchMessages() {
 		try {
 			const res = await axios.get(
 				"http://localhost:5000/get_conversation"
@@ -79,41 +82,75 @@ export default function Chat() {
 		}
 	}
 
-	return (
-		<div>
-			<h2 className="text-2xl font-bold">Puddle</h2>
-			<a className="border border-neutral-400 text-neutral-700 hover:border-black hover:text-black transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer">
-				Clear chat
-			</a>
-			<a className="border border-red-600 text-red-600 hover:border-red-500 hover:text-red-500 transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer">
-				Log out
-			</a>
+	async function logOut() {
+		try {
+			await axios.get("http://localhost:5000/logout")
+			navigate("/login")
+		} catch (err) {
+			console.error("Failed to log out:", err)
+		}
+	}
 
-			<div>
-				<div>
+	return (
+		<div className="w-[45rem] pt-4 mx-auto">
+			<div className="flex items-center justify-between pb-2 border-b-2">
+				<h2 className="text-2xl font-bold">Puddle</h2>
+
+				<div className="flex items-center gap-4">
+					<a
+						onClick={clearChat}
+						className="border border-neutral-400 text-neutral-700 hover:border-black hover:text-black transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer"
+					>
+						Clear chat
+					</a>
+					<a className="border border-red-500 text-red-500 hover:border-red-700 hover:text-red-700 transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer">
+						Log out
+					</a>
+				</div>
+			</div>
+
+			<div className="mt-4">
+				<div className="flex flex-col gap-3">
+					{messages.length <= 0 && (
+						<p className="self-center text-neutral-500">
+							Ask anything to get started
+						</p>
+					)}
 					{messages.map((msg, idx) => (
-						<div key={idx}>
-							<strong>
-								{msg.sender === "user" ? "You" : "Assistant"}:
-							</strong>{" "}
+						<p
+							key={idx}
+							className={`px-4 py-2 rounded-md ${
+								msg.sender === "user"
+									? "self-end bg-blue-100"
+									: "self-start bg-neutral-100"
+							}`}
+						>
 							{msg.content}
-						</div>
+						</p>
 					))}
 					<div ref={messagesEndRef} />
 				</div>
 
-				<div>
-					<textarea
-						rows={2}
+				<div className="mt-2 flex gap-2 items-center justify-center mb-4">
+					<input
+						type="text"
+						className="border-2 border-neutral-400 rounded-md px-4 py-1 focus:outline-none focus:border-black grow"
 						value={input}
 						onChange={e => setInput(e.target.value)}
 						onKeyDown={handleKeyPress}
-						placeholder="Type your message..."
+						placeholder="Type your message"
 					/>
-					<button onClick={sendMessage} disabled={loading}>
+					<button
+						onClick={sendMessage}
+						disabled={loading}
+						className={`${
+							loading
+								? "border border-neutral-200 text-neutral-200 px-4 py-1 rounded-md cursor-not-allowed"
+								: "border border-neutral-400 text-neutral-700 hover:border-black hover:text-black transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer"
+						}`}
+					>
 						Send
 					</button>
-					<button onClick={clearChat}>Clear Chat</button>
 				</div>
 			</div>
 		</div>
