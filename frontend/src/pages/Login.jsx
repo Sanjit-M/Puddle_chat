@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 
 export default function Login() {
 	const navigate = useNavigate()
-	
+
 	const [formData, setFormData] = useState({
 		username: "",
 		password: "",
@@ -14,25 +14,32 @@ export default function Login() {
 		setFormData({ ...formData, [e.target.name]: e.target.value })
 	}
 
+	function navigateToSignup() {
+		navigate("/signup")
+	}
+
 	function handleSubmit(e) {
 		e.preventDefault()
-		axios.post('http://localhost:5000/login', {
-			username: formData.username,
-			password: formData.password,
-		}, {
-			withCredentials: true,
-		})
-		.then(response => {
-			if(response.status === 200) {
-				// Redirect to the home page or dashboard after successful login
-				navigate('/chat');
-			}
-		})
-		.catch(error => {
-			console.error("Login failed:", error);
-			// Handle login failure (e.g., show an error message)
-			alert('Login failed. Check your username and password.');
-		});
+		axios
+			.post(
+				"http://localhost:5000/login",
+				{
+					username: formData.username,
+					password: formData.password,
+				},
+				{
+					withCredentials: true,
+				}
+			)
+			.then(response => {
+				if (response.status === 200) {
+					navigate("/chat")
+				}
+			})
+			.catch(error => {
+				console.error("Login failed:", error)
+				alert("Login failed. Check your username and password.")
+			})
 	}
 
 	return (
@@ -44,7 +51,7 @@ export default function Login() {
 				className="flex items-center justify-center flex-col gap-2"
 			>
 				<input
-					className="border-2 border-neutral-400 rounded-md px-4 py-1"
+					className="border-2 border-neutral-400 rounded-md px-4 py-1 focus:outline-none focus:border-black"
 					type="text"
 					name="username"
 					placeholder="username"
@@ -53,7 +60,7 @@ export default function Login() {
 					value={formData.username}
 				/>
 				<input
-					className="border-2 border-neutral-400 rounded-md px-4 py-1"
+					className="border-2 border-neutral-400 rounded-md px-4 py-1 focus:outline-none focus:border-black"
 					type="password"
 					name="password"
 					placeholder="password"
@@ -69,6 +76,13 @@ export default function Login() {
 					Log In
 				</button>
 			</form>
+
+			<a
+				className="text-blue-500 cursor-pointer hover:underline"
+				onClick={navigateToSignup}
+			>
+				Create a new account
+			</a>
 		</div>
 	)
 }

@@ -12,8 +12,9 @@ def load_user(user_id):
 
 def build_prompt_from_history(messages, new_user_message):
     prompt = ""
-    # Reverse to chronological order
-    for msg in reversed(messages):
+    # Convert cursor to list so we can reverse it
+    messages_list = list(messages)
+    for msg in reversed(messages_list):
         sender = "User" if msg['sender'] == 'user' else "Assistant"
         prompt += f"{sender}: {msg['content']}\n"
     prompt += f"User: {new_user_message}\nAssistant:"
