@@ -20,7 +20,7 @@ export default function Signup() {
 		e.preventDefault()
 		axios
 			.post(
-				"http://localhost:5000/signup",
+				"http://localhost:6969/signup",
 				{
 					username: formData.username,
 					password: formData.password,
@@ -32,7 +32,7 @@ export default function Signup() {
 			.then(response => {
 				axios
 					.post(
-						"http://localhost:5000/login",
+						"http://localhost:6969/login",
 						{
 							username: formData.username,
 							password: formData.password,

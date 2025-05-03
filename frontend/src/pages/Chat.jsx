@@ -16,7 +16,7 @@ export default function Chat() {
 	async function fetchMessages() {
 		try {
 			const res = await axios.get(
-				"http://localhost:5000/get_conversation"
+				"http://localhost:6969/get_conversation"
 			)
 			setMessages(res.data.messages)
 		} catch (err) {
@@ -45,7 +45,7 @@ export default function Chat() {
 		setLoading(true)
 
 		try {
-			const res = await axios.post("http://localhost:5000/send_message", {
+			const res = await axios.post("http://localhost:6969/send_message", {
 				content: input,
 			})
 			const llmMessage = {
@@ -75,7 +75,7 @@ export default function Chat() {
 
 	const clearChat = async () => {
 		try {
-			await axios.post("http://localhost:5000/clear_history")
+			await axios.post("http://localhost:6969/clear_history")
 			setMessages([])
 		} catch (err) {
 			console.error("Failed to clear chat:", err)
@@ -84,7 +84,7 @@ export default function Chat() {
 
 	async function logOut() {
 		try {
-			await axios.get("http://localhost:5000/logout")
+			await axios.get("http://localhost:6969/logout")
 			navigate("/login")
 		} catch (err) {
 			console.error("Failed to log out:", err)
@@ -103,7 +103,7 @@ export default function Chat() {
 					>
 						Clear chat
 					</a>
-					<a className="border border-red-500 text-red-500 hover:border-red-700 hover:text-red-700 transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer">
+					<a onClick={logOut} className="border border-red-500 text-red-500 hover:border-red-700 hover:text-red-700 transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer">
 						Log out
 					</a>
 				</div>

@@ -22,7 +22,7 @@ export default function Login() {
 		e.preventDefault()
 		axios
 			.post(
-				"http://localhost:5000/login",
+				"http://localhost:6969/login",
 				{
 					username: formData.username,
 					password: formData.password,
