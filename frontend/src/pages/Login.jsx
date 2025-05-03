@@ -69,12 +69,23 @@ export default function Login() {
 					value={formData.password}
 				/>
 
-				<button
-					type="submit"
-					className="border border-neutral-400 text-neutral-700 hover:border-black hover:text-black transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer"
-				>
-					Log In
-				</button>
+				{formData.username.length > 0 &&
+				formData.password.length > 0 ? (
+					<button
+						type="submit"
+						className="border border-neutral-400 text-neutral-700 hover:border-black hover:text-black transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer"
+					>
+						Log in
+					</button>
+				) : (
+					<button
+						type="submit"
+						disabled="true"
+						className="border border-neutral-200 text-neutral-200 px-4 py-1 rounded-md cursor-not-allowed"
+					>
+						Log in
+					</button>
+				)}
 			</form>
 
 			<a

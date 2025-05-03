@@ -109,12 +109,23 @@ export default function Signup() {
 						<p className="text-red-500">passwords do not match</p>
 					)}
 
-				<button
-					type="submit"
-					className="border border-neutral-400 text-neutral-700 hover:border-black hover:text-black transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer"
-				>
-					Sign up
-				</button>
+				{formData.password.length >= 8 &&
+				formData.repeatPassword == formData.password ? (
+					<button
+						type="submit"
+						className="border border-neutral-400 text-neutral-700 hover:border-black hover:text-black transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer"
+					>
+						Sign up
+					</button>
+				) : (
+					<button
+						type="submit"
+						disabled="true"
+						className="border border-neutral-200 text-neutral-200 px-4 py-1 rounded-md cursor-not-allowed"
+					>
+						Sign up
+					</button>
+				)}
 			</form>
 
 			<a
