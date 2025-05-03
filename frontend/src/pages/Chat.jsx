@@ -103,7 +103,10 @@ export default function Chat() {
 					>
 						Clear chat
 					</a>
-					<a onClick={logOut} className="border border-red-500 text-red-500 hover:border-red-700 hover:text-red-700 transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer">
+					<a
+						onClick={logOut}
+						className="border border-red-500 text-red-500 hover:border-red-700 hover:text-red-700 transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer"
+					>
 						Log out
 					</a>
 				</div>
@@ -142,9 +145,9 @@ export default function Chat() {
 					/>
 					<button
 						onClick={sendMessage}
-						disabled={loading}
+						disabled={loading || input.length <= 0}
 						className={`${
-							loading
+							loading || input.length <= 0
 								? "border border-neutral-200 text-neutral-200 px-4 py-1 rounded-md cursor-not-allowed"
 								: "border border-neutral-400 text-neutral-700 hover:border-black hover:text-black transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer"
 						}`}

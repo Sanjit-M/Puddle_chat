@@ -10,16 +10,16 @@ export default function Home() {
 
 			<div className="flex items-center justify-center gap-4">
 				<a
-					onClick={() => navigate("/signup")}
-					className="border border-neutral-400 text-neutral-700 hover:border-black hover:text-black transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer"
-				>
-					Sign Up
-				</a>
-				<a
 					onClick={() => navigate("/login")}
 					className="border border-neutral-400 text-neutral-700 hover:border-black hover:text-black transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer"
 				>
 					Log In
+				</a>
+				<a
+					onClick={() => navigate("/signup")}
+					className="border border-neutral-400 text-neutral-700 hover:border-black hover:text-black transition-colors duration-150 px-4 py-1 rounded-md cursor-pointer"
+				>
+					Sign Up
 				</a>
 			</div>
 		</div>
