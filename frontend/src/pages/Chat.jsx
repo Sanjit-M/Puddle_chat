@@ -85,7 +85,7 @@ export default function Chat() {
 	async function logOut() {
 		try {
 			await axios.get("http://localhost:6969/logout")
-			navigate("/login")
+			navigate("/")
 		} catch (err) {
 			console.error("Failed to log out:", err)
 		}
@@ -131,10 +131,11 @@ export default function Chat() {
 							{msg.content}
 						</p>
 					))}
+					{loading && <p className="text-neutral-500">Thinking...</p>}
 					<div ref={messagesEndRef} />
 				</div>
 
-				<div className="mt-2 flex gap-2 items-center justify-center mb-4">
+				<div className="mt-1 flex gap-2 items-center justify-center mb-4">
 					<input
 						type="text"
 						className="border-2 border-neutral-400 rounded-md px-4 py-1 focus:outline-none focus:border-black grow"
